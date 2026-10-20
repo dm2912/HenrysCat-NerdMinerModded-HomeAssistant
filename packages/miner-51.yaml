@@ -1,0 +1,133 @@
+# ==========================================
+# Local Miner 51
+# IP: 192.168.1.51
+# ==========================================
+
+# ==========================================
+# Note, I have used the unique ID throughout of Miner_51 because this miner is on ip address 192.168.1.51, 
+# with additional mineers on .52, .53 etc etc. Name your miners however you wish, but ensure you change all instances of "miner_51" to your miner name
+# ==========================================
+
+rest:
+
+  # Local miner at 192.168.1.51
+  - resource: "http://192.168.1.51/api/status"
+    scan_interval: 30
+    timeout: 10
+    sensor:
+      - name: "Miner 51 Firmware Version"
+        unique_id: miner_51_firmware_version
+        value_template: "{{ value_json['version'] }}"
+      - name: "Miner 51 State"
+        unique_id: miner_51_state
+        value_template: "{{ value_json['state'] }}"
+      - name: "Miner 51 Uptime"
+        unique_id: miner_51_uptime
+        value_template: "{{ value_json['uptime_s'] }}"
+        unit_of_measurement: "s"
+        device_class: duration
+      - name: "Miner 51 Hashrate"
+        unique_id: miner_51_hashrate
+        value_template: "{{ value_json['hashrate_khs'] }}"
+        unit_of_measurement: "kH/s"
+        state_class: measurement
+      - name: "Miner 51 Average Hashrate"
+        unique_id: miner_51_average_hashrate
+        value_template: "{{ value_json['hashrate_avg_khs'] }}"
+        unit_of_measurement: "kH/s"
+        state_class: measurement
+      - name: "Miner 51 Total Megahashes"
+        unique_id: miner_51_total_megahashes
+        value_template: "{{ value_json['total_mhashes'] }}"
+        unit_of_measurement: "MH"
+        state_class: total_increasing
+      - name: "Miner 51 Mining Time"
+        unique_id: miner_51_mining_time
+        value_template: "{{ value_json['mining_time_s'] }}"
+        unit_of_measurement: "s"
+        device_class: duration
+      - name: "Miner 51 Templates"
+        unique_id: miner_51_templates
+        value_template: "{{ value_json['templates'] }}"
+        state_class: total_increasing
+      - name: "Miner 51 Best Difficulty"
+        unique_id: miner_51_best_difficulty
+        value_template: "{{ value_json['best_diff'] }}"
+        state_class: measurement
+      - name: "Miner 51 32-bit Shares"
+        unique_id: miner_51_32_bit_shares
+        value_template: "{{ value_json['shares_32bit'] }}"
+        state_class: total_increasing
+      - name: "Miner 51 Blocks Found"
+        unique_id: miner_51_blocks_found
+        value_template: "{{ value_json['blocks_found'] }}"
+        state_class: total_increasing
+      - name: "Miner 51 Shares Accepted"
+        unique_id: miner_51_shares_accepted
+        value_template: "{{ value_json['shares_accepted'] }}"
+        state_class: total_increasing
+      - name: "Miner 51 Shares Rejected"
+        unique_id: miner_51_shares_rejected
+        value_template: "{{ value_json['shares_rejected'] }}"
+        state_class: total_increasing
+      - name: "Miner 51 Pool Address"
+        unique_id: miner_51_pool_address
+        value_template: "{{ value_json['pool']['address'] }}"
+      - name: "Miner 51 Pool Port"
+        unique_id: miner_51_pool_port
+        value_template: "{{ value_json['pool']['port'] }}"
+      - name: "Miner 51 Pool Backup"
+        unique_id: miner_51_pool_backup
+        value_template: "{{ 'Yes' if value_json['pool']['backup'] else 'No' }}"
+      - name: "Miner 51 Pool Subscribed"
+        unique_id: miner_51_pool_subscribed
+        value_template: "{{ 'Yes' if value_json['pool']['subscribed'] else 'No' }}"
+      - name: "Miner 51 Pool Difficulty"
+        unique_id: miner_51_pool_difficulty
+        value_template: "{{ value_json['pool']['difficulty'] }}"
+        state_class: measurement
+      - name: "Miner 51 WiFi SSID"
+        unique_id: miner_51_wifi_ssid
+        value_template: "{{ value_json['wifi']['ssid'] }}"
+      - name: "Miner 51 WiFi RSSI"
+        unique_id: miner_51_wifi_rssi
+        value_template: "{{ value_json['wifi']['rssi'] }}"
+        unit_of_measurement: "dBm"
+        device_class: signal_strength
+        state_class: measurement
+      - name: "Miner 51 WiFi IP"
+        unique_id: miner_51_wifi_ip
+        value_template: "{{ value_json['wifi']['ip'] }}"
+      - name: "Miner 51 Free Heap"
+        unique_id: miner_51_free_heap
+        value_template: "{{ value_json['free_heap'] }}"
+        unit_of_measurement: "B"
+        device_class: data_size
+        state_class: measurement
+      - name: "Miner 51 Share Acceptance"
+        unique_id: miner_51_share_acceptance
+        value_template: >-
+          {% set accepted = value_json.shares_accepted | float(0) %}
+          {% set rejected = value_json.shares_rejected | float(0) %}
+          {{ ((accepted / (accepted + rejected)) * 100) | round(2) if (accepted + rejected) > 0 else 0 }}
+        unit_of_measurement: "%"
+        state_class: measurement
+
+# ==========================================
+# Calculated Sensors
+# ==========================================
+
+template:
+  - sensor:
+      - name: "Miner 51 Share Acceptance"
+        unique_id: miner_51_share_acceptance
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set accepted =
+             states('sensor.miner_51_shares_accepted') | int(0) %}
+          {% set rejected =
+             states('sensor.miner_51_shares_rejected') | int(0) %}
+          {% set total = accepted + rejected %}
+          {{ ((accepted / total) * 100) | round(2)
+             if total > 0 else 0 }}
