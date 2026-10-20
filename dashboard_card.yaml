@@ -1,0 +1,16 @@
+type: entities
+entities:
+  - entity: sensor.miner_51_wifi_ip
+    name: IP Address
+  - entity: sensor.miner_51_pool_address
+    name: Pool
+  - entity: sensor.miner_51_state
+    name: Status
+  - entity: sensor.miner_51_hashrate
+    name: Current Hashrate
+  - entity: sensor.miner_51_best_difficulty
+    name: Best Difficulty
+  - entity: sensor.miner_51_blocks_found
+    name: Blocks Found
+  - entity: sensor.miner_51_firmware_status
+    name: Firmware
