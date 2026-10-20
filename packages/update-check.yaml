@@ -1,0 +1,52 @@
+
+# NerdMiner-Modded firmware update monitoring
+
+rest:
+  - resource: "https://api.github.com/repos/HenrysCat/NerdMiner-Modded/releases/latest"
+    scan_interval: 3600
+    timeout: 15
+    headers:
+      Accept: "application/vnd.github+json"
+      User-Agent: "HomeAssistant-NerdMiner"
+
+    sensor:
+      - name: "NerdMiner Latest Firmware"
+        unique_id: nerdminer_latest_firmware
+        value_template: "{{ value_json.tag_name }}"
+        json_attributes:
+          - html_url
+          - published_at
+          - body
+
+template:
+  - binary_sensor:
+      - name: "Miner 51 Firmware Update Available"
+        unique_id: miner_51_firmware_update_available
+        icon: mdi:update
+        availability: >
+          {{ states('sensor.miner_51_firmware_version')
+             not in ['unknown', 'unavailable', '']
+             and states('sensor.nerdminer_latest_firmware')
+             not in ['unknown', 'unavailable', ''] }}
+        state: >
+          {% set installed =
+             states('sensor.miner_51_firmware_version')
+             | lower | regex_replace('^v', '') %}
+          {% set latest =
+             states('sensor.nerdminer_latest_firmware')
+             | lower | regex_replace('^v', '') %}
+          {{ version(installed) < version(latest) }}
+
+  - sensor:
+      - name: "Miner 51 Firmware Status"
+        unique_id: miner_51_firmware_status
+        icon: mdi:update
+        state: >
+          {% if is_state('binary_sensor.miner_51_firmware_update_available', 'on') %}
+            Update available
+          {% elif is_state('binary_sensor.miner_51_firmware_update_available', 'off') %}
+            Up to date
+          {% else %}
+            Unknown
+          {% endif %}
+          {% endif %}
