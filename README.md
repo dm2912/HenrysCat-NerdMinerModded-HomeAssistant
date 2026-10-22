@@ -37,3 +37,8 @@ Dashboard Panel
 ---------------
 
 + dashboard_card.yaml contains a basic setup for a panel monitoring online status, hashrate and checking for available firmware updates
+
+Home Assistant notification
+---------------------------
+
++ Use firmware_notification.yaml to create a custom automation to notify you in HA of firmware updates

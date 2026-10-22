@@ -1,0 +1,23 @@
+# ========================================
+# Create a new automation using this YAML
+# Change your entity id's as relevant
+# ========================================
+
+alias: NerdMiner Firmware Update Alert
+description: Notify when a miner has outdated firmware
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.miner_51_firmware_update_available
+      - binary_sensor.miner_52_firmware_update_available
+      - binary_sensor.miner_53_firmware_update_available
+    to: 'on'
+actions:
+  - action: persistent_notification.create
+    data:
+      title: NerdMiner Firmware Update Available
+      message: |
+        {{ trigger.to_state.name }}.
+        Latest version: {{ states('sensor.nerdminer_latest_firmware') }}
+        Release notes: https://github.com/HenrysCat/NerdMiner-Modded/releases
+mode: queued
