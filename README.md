@@ -42,3 +42,6 @@ Home Assistant notification
 ---------------------------
 
 + Use firmware_notification.yaml to create a custom automation to notify you in HA of firmware updates
+
+<img width="620" height="968" alt="Screenshot_20261022_201237" src="https://github.com/user-attachments/assets/1622f587-c925-4a17-ac82-548465307eb4" />
+
